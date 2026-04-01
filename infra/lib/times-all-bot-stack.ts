@@ -6,33 +6,26 @@ import * as iam from 'aws-cdk-lib/aws-iam';
 import * as runtime from 'aws-cdk-lib/aws-lambda';
 import * as lambda from 'aws-cdk-lib/aws-lambda-nodejs';
 import type { Construct } from 'constructs';
+import { loadEnv } from '../../src/env.ts';
 
 export class TimesAllBotStack extends cdk.Stack {
 	constructor(scope: Construct, id: string, props?: cdk.StackProps) {
 		super(scope, id, props);
 
-		const slackBotToken = process.env['SLACK_BOT_TOKEN'];
-		if (!slackBotToken) throw new Error('SLACK_BOT_TOKEN is required');
-		const slackSigningSecret = process.env['SLACK_SIGNING_SECRET'];
-		if (!slackSigningSecret)
-			throw new Error('SLACK_SIGNING_SECRET is required');
-		const timesAllChannelId = process.env['TIMES_ALL_CHANNEL_ID'];
-		if (!timesAllChannelId) throw new Error('TIMES_ALL_CHANNEL_ID is required');
-		const workspaceUrl = process.env['WORKSPACE_URL'];
-		if (!workspaceUrl) throw new Error('WORKSPACE_URL is required');
+		const env = loadEnv();
 
 		const projectRoot = path.join(import.meta.dirname, '../..');
 
 		const fn = new lambda.NodejsFunction(this, 'SlackHandler', {
-			entry: path.join(projectRoot, 'index.ts'),
+			entry: path.join(projectRoot, 'src/handler.ts'),
 			handler: 'handler',
 			runtime: runtime.Runtime.NODEJS_24_X,
 			timeout: cdk.Duration.seconds(30),
 			environment: {
-				SLACK_BOT_TOKEN: slackBotToken,
-				SLACK_SIGNING_SECRET: slackSigningSecret,
-				TIMES_ALL_CHANNEL_ID: timesAllChannelId,
-				WORKSPACE_URL: workspaceUrl,
+				SLACK_BOT_TOKEN: env.slackBotToken,
+				SLACK_SIGNING_SECRET: env.slackSigningSecret,
+				TIMES_ALL_CHANNEL_ID: env.timesAllChannelId,
+				WORKSPACE_URL: env.workspaceUrl,
 			},
 			bundling: {
 				nodeModules: ['@slack/bolt'],

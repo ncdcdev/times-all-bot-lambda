@@ -3,7 +3,9 @@
 	"compilerOptions": {
 		"target": "es2022",
 		"module": "node16",
-		"types": ["node"]
+		"types": ["node"],
+		"allowImportingTsExtensions": true,
+		"noEmit": true
 	},
 	"exclude": ["infra"]
 }
