@@ -6,26 +6,34 @@ if (!token) throw new Error('SLACK_BOT_TOKEN is undefined');
 const web = new WebClient(token);
 
 async function joinTimesChannels() {
-	const result = await web.conversations.list({
-		types: 'public_channel',
-		limit: 1000,
-	});
-	const channels = result.channels;
-	console.log(channels?.length);
-	if (!channels) throw new Error('channels is undefined');
+	let cursor: string | undefined;
 
-	for (const channel of channels) {
-		if (
-			channel.name &&
-			isTimesChannel(channel.name) &&
-			channel.is_archived === false
-		) {
-			console.log(channel.name);
-			if (!channel.id) throw new Error('channel id is undefined');
-			await web.conversations.join({ channel: channel.id });
-			console.log(`Joined channel: ${channel.name}`);
+	do {
+		const result = await web.conversations.list({
+			types: 'public_channel',
+			limit: 1000,
+			...(cursor ? { cursor } : {}),
+		});
+		const channels = result.channels;
+		if (!channels || channels.length === 0) break;
+
+		console.log(`fetched ${channels.length} channels`);
+
+		for (const channel of channels) {
+			if (
+				channel.name &&
+				isTimesChannel(channel.name) &&
+				channel.is_archived === false
+			) {
+				console.log(channel.name);
+				if (!channel.id) throw new Error('channel id is undefined');
+				await web.conversations.join({ channel: channel.id });
+				console.log(`Joined channel: ${channel.name}`);
+			}
 		}
-	}
+
+		cursor = result.response_metadata?.next_cursor || undefined;
+	} while (cursor);
 }
 
 joinTimesChannels();
