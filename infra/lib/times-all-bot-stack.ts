@@ -26,7 +26,7 @@ export class TimesAllBotStack extends cdk.Stack {
 		const fn = new lambda.NodejsFunction(this, 'SlackHandler', {
 			entry: path.join(projectRoot, 'index.ts'),
 			handler: 'handler',
-			runtime: runtime.Runtime.NODEJS_20_X,
+			runtime: runtime.Runtime.NODEJS_24_X,
 			timeout: cdk.Duration.seconds(30),
 			environment: {
 				SLACK_BOT_TOKEN: slackBotToken,
