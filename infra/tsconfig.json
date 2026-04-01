@@ -9,5 +9,5 @@
 		"types": ["node"],
 		"resolveJsonModule": true
 	},
-	"include": ["bin/**/*.ts", "lib/**/*.ts"]
+	"include": ["bin/**/*.ts", "lib/**/*.ts", "../src/env.ts"]
 }
