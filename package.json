@@ -7,9 +7,7 @@
 		"dev": "ts-node index.ts",
 		"lint": "biome lint --apply",
 		"format": "biome format .",
-		"check": "biome check  --write .",
-		"local": "serverless offline --noPrependStageInUrl",
-		"deploy": "tsc && AWS_PROFILE=sandbox serverless deploy"
+		"check": "biome check  --write ."
 	},
 	"keywords": [],
 	"author": "",
@@ -28,8 +26,6 @@
 		"@typescript-eslint/parser": "^7.0.1",
 		"esbuild": "^0.27.4",
 		"eslint": "^8.56.0",
-		"serverless-dotenv-plugin": "^6.0.0",
-		"serverless-offline": "^13.3.3",
 		"typescript": "^5.3.3"
 	}
 }
