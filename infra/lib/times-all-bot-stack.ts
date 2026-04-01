@@ -1,6 +1,7 @@
 import * as cdk from 'aws-cdk-lib';
 import * as apigatewayv2 from 'aws-cdk-lib/aws-apigatewayv2';
 import * as integrations from 'aws-cdk-lib/aws-apigatewayv2-integrations';
+import * as iam from 'aws-cdk-lib/aws-iam';
 import * as lambda from 'aws-cdk-lib/aws-lambda-nodejs';
 import * as runtime from 'aws-cdk-lib/aws-lambda';
 import type { Construct } from 'constructs';
@@ -67,6 +68,36 @@ export class TimesAllBotStack extends cdk.Stack {
 		new cdk.CfnOutput(this, 'ApiEndpoint', {
 			value: `${httpApi.apiEndpoint}/slack/events`,
 			description: 'Slack Event Subscriptions Request URL',
+		});
+
+		// GitHub Actions OIDC
+		const oidcProvider = new iam.OpenIdConnectProvider(this, 'GitHubOidc', {
+			url: 'https://token.actions.githubusercontent.com',
+			clientIds: ['sts.amazonaws.com'],
+		});
+
+		const deployRole = new iam.Role(this, 'GitHubActionsDeployRole', {
+			roleName: 'github-actions-times-all-bot',
+			assumedBy: new iam.WebIdentityPrincipal(
+				oidcProvider.openIdConnectProviderArn,
+				{
+					StringEquals: {
+						'token.actions.githubusercontent.com:aud': 'sts.amazonaws.com',
+					},
+					StringLike: {
+						'token.actions.githubusercontent.com:sub':
+							'repo:ncdcdev/times-all-bot-lambda:*',
+					},
+				},
+			),
+			managedPolicies: [
+				iam.ManagedPolicy.fromAwsManagedPolicyName('AdministratorAccess'),
+			],
+		});
+
+		new cdk.CfnOutput(this, 'DeployRoleArn', {
+			value: deployRole.roleArn,
+			description: 'GitHub ActionsデプロイのIAMロールARN',
 		});
 	}
 }
