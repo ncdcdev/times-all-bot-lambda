@@ -1,4 +1,4 @@
-import * as path from 'path';
+import * as path from 'node:path';
 import * as cdk from 'aws-cdk-lib';
 import * as apigatewayv2 from 'aws-cdk-lib/aws-apigatewayv2';
 import * as integrations from 'aws-cdk-lib/aws-apigatewayv2-integrations';
@@ -11,17 +11,17 @@ export class TimesAllBotStack extends cdk.Stack {
 	constructor(scope: Construct, id: string, props?: cdk.StackProps) {
 		super(scope, id, props);
 
-		const slackBotToken = process.env.SLACK_BOT_TOKEN;
+		const slackBotToken = process.env['SLACK_BOT_TOKEN'];
 		if (!slackBotToken) throw new Error('SLACK_BOT_TOKEN is required');
-		const slackSigningSecret = process.env.SLACK_SIGNING_SECRET;
+		const slackSigningSecret = process.env['SLACK_SIGNING_SECRET'];
 		if (!slackSigningSecret)
 			throw new Error('SLACK_SIGNING_SECRET is required');
-		const timesAllChannelId = process.env.TIMES_ALL_CHANNEL_ID;
+		const timesAllChannelId = process.env['TIMES_ALL_CHANNEL_ID'];
 		if (!timesAllChannelId) throw new Error('TIMES_ALL_CHANNEL_ID is required');
-		const workspaceUrl = process.env.WORKSPACE_URL;
+		const workspaceUrl = process.env['WORKSPACE_URL'];
 		if (!workspaceUrl) throw new Error('WORKSPACE_URL is required');
 
-		const projectRoot = path.join(__dirname, '../..');
+		const projectRoot = path.join(import.meta.dirname, '../..');
 
 		const fn = new lambda.NodejsFunction(this, 'SlackHandler', {
 			entry: path.join(projectRoot, 'index.ts'),
@@ -35,7 +35,7 @@ export class TimesAllBotStack extends cdk.Stack {
 				WORKSPACE_URL: workspaceUrl,
 			},
 			bundling: {
-				nodeModules: ['@slack/bolt', 'dotenv'],
+				nodeModules: ['@slack/bolt'],
 				commandHooks: {
 					beforeBundling(inputDir: string): string[] {
 						return [`cd ${inputDir}`];

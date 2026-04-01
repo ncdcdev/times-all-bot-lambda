@@ -1,9 +1,8 @@
 // index.ts
-import dotenv from 'dotenv';
-dotenv.config();
-import { App, AwsLambdaReceiver, GenericMessageEvent } from '@slack/bolt';
+import { App, AwsLambdaReceiver } from '@slack/bolt';
+import type { GenericMessageEvent } from '@slack/types';
 
-const SLACK_SIGNING_SECRET = process.env.SLACK_SIGNING_SECRET;
+const SLACK_SIGNING_SECRET = process.env['SLACK_SIGNING_SECRET'];
 if (!SLACK_SIGNING_SECRET) throw new Error('signing secret is undefined');
 
 // AWS Lambdaのレシーバーを作成
@@ -13,13 +12,13 @@ const awsLambdaReceiver = new AwsLambdaReceiver({
 
 // Slack Appの設定情報
 const app = new App({
-	token: process.env.SLACK_BOT_TOKEN,
+	token: process.env['SLACK_BOT_TOKEN'],
 	receiver: awsLambdaReceiver,
 });
 
-const TIMES_ALL_CHANNEL_ID = process.env.TIMES_ALL_CHANNEL_ID; // `times-all` チャンネルのIDを設定
+const TIMES_ALL_CHANNEL_ID = process.env['TIMES_ALL_CHANNEL_ID']; // `times-all` チャンネルのIDを設定
 if (!TIMES_ALL_CHANNEL_ID) throw new Error('times-all channel is undefined');
-const WORKSPACE_URL = process.env.WORKSPACE_URL; // SlackワークスペースのURLを設定
+const WORKSPACE_URL = process.env['WORKSPACE_URL']; // SlackワークスペースのURLを設定
 if (!WORKSPACE_URL) throw new Error('workspace is undefined');
 
 // 型ガード関数
@@ -88,6 +87,5 @@ export const handler = async (
 	const boltHandler = await awsLambdaReceiver.start();
 	// boltHandlerは内部的にcallbackを使用しないが、型定義上3引数が必須
 	// biome-ignore lint/suspicious/noExplicitAny: AwsEventの型がexportされていないため
-	// biome-ignore lint/suspicious/noEmptyBlockStatements: callbackは使用されないためno-op
 	return boltHandler(event as any, context, () => {});
 };
