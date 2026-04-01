@@ -8,7 +8,7 @@
 		"lint": "biome check --write .",
 		"format": "biome format .",
 		"check": "biome check .",
-		"typecheck": "tsc --noEmit",
+		"typecheck": "tsc",
 		"test": "node --test 'src/**/*.test.ts'"
 	},
 	"keywords": [],
