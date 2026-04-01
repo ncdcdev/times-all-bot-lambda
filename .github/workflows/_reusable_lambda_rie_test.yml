@@ -1,0 +1,76 @@
+name: Reusable - Lambda RIE Test
+
+on:
+  workflow_call:
+
+jobs:
+  lambda-rie-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6.3.0
+        with:
+          node-version: "20"
+          cache: npm
+          cache-dependency-path: package-lock.json
+
+      - run: npm ci
+
+      - name: Bundle handler
+        run: npx esbuild index.ts --bundle --platform=node --target=node20 --external:@slack/bolt --external:dotenv --outfile=dist/index.js
+
+      - name: Prepare Lambda artifact
+        run: cp -R node_modules dist/
+
+      - name: Start Lambda RIE container
+        run: |
+          docker run -d --name lambda-rie \
+            -p 9000:8080 \
+            -v ${{ github.workspace }}/dist:/var/task:ro \
+            -e SLACK_SIGNING_SECRET=test-signing-secret \
+            -e SLACK_BOT_TOKEN=xoxb-test-token \
+            -e TIMES_ALL_CHANNEL_ID=C0000000000 \
+            -e WORKSPACE_URL=https://test.slack.com \
+            public.ecr.aws/lambda/nodejs:20 \
+            index.handler
+
+      - name: Test handler invocation
+        run: |
+          echo "--- Lambda RIE ハンドラー動作検証 ---"
+          echo "検証内容: ハンドラーがLambdaランタイム上でロード・実行できることを確認"
+          echo "※ テストリクエストにSlackヘッダーがないためアプリケーションエラーは想定通り発生します"
+          echo ""
+
+          # コンテナの起動を待つ
+          READY=false
+          for i in $(seq 1 10); do
+            if curl -s -o /dev/null http://localhost:9000/2015-03-31/functions/function/invocations 2>/dev/null; then
+              READY=true
+              break
+            fi
+            sleep 1
+          done
+
+          if [ "$READY" != "true" ]; then
+            echo "::error::Lambda RIEコンテナの起動に失敗しました"
+            docker logs lambda-rie
+            exit 1
+          fi
+
+          RESPONSE=$(curl -s -X POST \
+            "http://localhost:9000/2015-03-31/functions/function/invocations" \
+            -d '{"body": "test"}')
+
+          # Lambdaランタイムレベルのエラー (Runtime.CallbackHandlerDeprecated等) がないことを確認
+          if echo "$RESPONSE" | grep -q '"errorType":"Runtime\.' ; then
+            echo "::error::Lambdaランタイムエラーが検出されました: $RESPONSE"
+            docker logs lambda-rie
+            exit 1
+          fi
+
+          echo "OK: ランタイムエラーなし (ハンドラーは正常にロード・実行されました)"
+
+      - name: Cleanup Lambda RIE container
+        if: always()
+        run: docker rm -f lambda-rie 2>/dev/null || true

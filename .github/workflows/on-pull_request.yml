@@ -9,3 +9,6 @@ concurrency:
 jobs:
   check:
     uses: ./.github/workflows/_reusable_check.yml
+
+  lambda-rie-test:
+    uses: ./.github/workflows/_reusable_lambda_rie_test.yml
