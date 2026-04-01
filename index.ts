@@ -54,6 +54,9 @@ app.message(async ({ message, client }) => {
 				return;
 			} //hidden subtypeがある場合は無視
 			// https://api.slack.com/events/message#hidden_subtypes
+			if ('subtype' in message && message.subtype === 'channel_join') {
+				return;
+			} //チャンネル参加メッセージは無視
 			const messageTimestamp = message.ts.replace('.', '');
 			const messageLink = `${WORKSPACE_URL}/archives/${message.channel}/p${messageTimestamp}`;
 			console.log('messageLink:', messageLink);
