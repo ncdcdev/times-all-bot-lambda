@@ -4,8 +4,8 @@
 		"target": "es2022",
 		"module": "node16",
 		"lib": ["ES2022"],
-		"declaration": true,
-		"outDir": "cdk.out/ts",
+		"noEmit": true,
+		"allowImportingTsExtensions": true,
 		"types": ["node"],
 		"resolveJsonModule": true
 	},
