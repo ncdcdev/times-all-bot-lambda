@@ -14,8 +14,16 @@ async function joinTimesChannels() {
 			limit: 1000,
 			...(cursor ? { cursor } : {}),
 		});
+		if (!result.ok) {
+			throw new Error(
+				`Failed to list conversations: ${result.error ?? 'unknown error'}`,
+			);
+		}
 		const channels = result.channels;
-		if (!channels || channels.length === 0) break;
+		if (!channels) {
+			throw new Error('channels is undefined in conversations.list response');
+		}
+		if (channels.length === 0) break;
 
 		console.log(`fetched ${channels.length} channels`);
 
