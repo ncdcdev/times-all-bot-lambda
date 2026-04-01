@@ -34,6 +34,11 @@ jobs:
 
       - name: Test handler invocation
         run: |
+          echo "--- Lambda RIE ハンドラー動作検証 ---"
+          echo "検証内容: ハンドラーがLambdaランタイム上でロード・実行できることを確認"
+          echo "※ テストリクエストにSlackヘッダーがないためアプリケーションエラーは想定通り発生します"
+          echo ""
+
           # コンテナの起動を待つ
           for i in $(seq 1 10); do
             if curl -s -o /dev/null http://localhost:9000/2015-03-31/functions/function/invocations 2>/dev/null; then
@@ -46,14 +51,14 @@ jobs:
             "http://localhost:9000/2015-03-31/functions/function/invocations" \
             -d '{"body": "test"}')
 
-          echo "Response: $RESPONSE"
-
-          # Lambda ランタイムレベルのエラーがないことを確認
+          # Lambdaランタイムレベルのエラー (Runtime.CallbackHandlerDeprecated等) がないことを確認
           if echo "$RESPONSE" | grep -q '"errorType":"Runtime\.' ; then
-            echo "::error::Lambda ランタイムエラーが検出されました"
+            echo "::error::Lambdaランタイムエラーが検出されました: $RESPONSE"
             docker logs lambda-rie
             exit 1
           fi
+
+          echo "OK: ランタイムエラーなし (ハンドラーは正常にロード・実行されました)"
 
       - name: Cleanup Lambda RIE container
         if: always()
