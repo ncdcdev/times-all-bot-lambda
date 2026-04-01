@@ -4,7 +4,11 @@ const EnvSchema = v.object({
 	SLACK_SIGNING_SECRET: v.pipe(v.string(), v.nonEmpty()),
 	SLACK_BOT_TOKEN: v.pipe(v.string(), v.nonEmpty()),
 	TIMES_ALL_CHANNEL_ID: v.pipe(v.string(), v.nonEmpty()),
-	WORKSPACE_URL: v.pipe(v.string(), v.url()),
+	WORKSPACE_URL: v.pipe(
+		v.string(),
+		v.url(),
+		v.check((s) => !s.endsWith('/'), 'URL must not end with a trailing slash'),
+	),
 });
 
 export type Env = {

@@ -14,14 +14,24 @@ describe('loadEnv', () => {
 	let originalEnv: NodeJS.ProcessEnv;
 
 	beforeEach(() => {
-		originalEnv = { ...process.env };
+		originalEnv = {};
+		for (const key of Object.keys(validEnv)) {
+			originalEnv[key] = process.env[key];
+		}
 		for (const [key, value] of Object.entries(validEnv)) {
 			process.env[key] = value;
 		}
 	});
 
 	afterEach(() => {
-		process.env = originalEnv;
+		for (const key of Object.keys(validEnv)) {
+			const original = originalEnv[key];
+			if (original === undefined) {
+				delete process.env[key];
+			} else {
+				process.env[key] = original;
+			}
+		}
 	});
 
 	it('すべての環境変数が設定されている場合はEnvオブジェクトを返す', () => {
@@ -56,6 +66,11 @@ describe('loadEnv', () => {
 
 	it('WORKSPACE_URLが不正なURLの場合はValiErrorを投げる', () => {
 		process.env['WORKSPACE_URL'] = 'not-a-url';
+		assert.throws(() => loadEnv(), v.ValiError);
+	});
+
+	it('WORKSPACE_URLが末尾スラッシュを含む場合はValiErrorを投げる', () => {
+		process.env['WORKSPACE_URL'] = 'https://workspace.slack.com/';
 		assert.throws(() => loadEnv(), v.ValiError);
 	});
 });
