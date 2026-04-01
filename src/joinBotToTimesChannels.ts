@@ -44,4 +44,4 @@ async function joinTimesChannels() {
 	} while (cursor);
 }
 
-joinTimesChannels();
+await joinTimesChannels();
