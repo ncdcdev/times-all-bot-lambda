@@ -18,7 +18,7 @@ jobs:
       - run: npm ci
 
       - name: Bundle handler
-        run: npx esbuild index.ts --bundle --platform=node --target=node24 --external:@slack/bolt --outfile=dist/index.js
+        run: npx esbuild src/handler.ts --bundle --platform=node --target=node24 --external:@slack/bolt --outfile=dist/index.js
 
       - name: Prepare Lambda artifact
         run: cp -R node_modules dist/

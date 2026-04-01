@@ -25,6 +25,9 @@ jobs:
       - name: Biome Check
         run: npm run check
 
+      - name: Test
+        run: npm test
+
       - name: TypeCheck
         run: npm run typecheck
 
