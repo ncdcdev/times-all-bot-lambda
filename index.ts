@@ -2,7 +2,6 @@
 import dotenv from 'dotenv';
 dotenv.config();
 import { App, AwsLambdaReceiver, GenericMessageEvent } from '@slack/bolt';
-import { Handler } from 'aws-lambda';
 
 const SLACK_SIGNING_SECRET = process.env.SLACK_SIGNING_SECRET;
 if (!SLACK_SIGNING_SECRET) throw new Error('signing secret is undefined');
@@ -79,7 +78,15 @@ app.event('channel_created', async ({ event, client, logger }) => {
 });
 
 // Lambdaのイベント処理
-export const handler: Handler = async (event, context, callback) => {
-	const handler = await awsLambdaReceiver.start();
-	return handler(event, context, callback);
+// Node.js 24ではcallbackベースのハンドラーが廃止されたため、
+// AwsLambdaReceiverのハンドラーを2引数のasync関数でラップする
+// ref: https://github.com/slackapi/bolt-js/issues/2761
+export const handler = async (
+	event: Record<string, unknown>,
+	context: unknown,
+) => {
+	const boltHandler = await awsLambdaReceiver.start();
+	// boltHandlerは内部的にcallbackを使用しないが、型定義上3引数が必須
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	return boltHandler(event as any, context, () => {});
 };
