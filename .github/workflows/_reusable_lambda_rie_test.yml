@@ -18,7 +18,10 @@ jobs:
       - run: npm ci
 
       - name: Bundle handler
-        run: npx esbuild index.ts --bundle --platform=node --target=node20 --outfile=dist/index.js
+        run: npx esbuild index.ts --bundle --platform=node --target=node20 --external:@slack/bolt --external:dotenv --outfile=dist/index.js
+
+      - name: Prepare Lambda artifact
+        run: cp -R node_modules dist/
 
       - name: Start Lambda RIE container
         run: |
