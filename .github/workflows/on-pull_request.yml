@@ -12,3 +12,6 @@ jobs:
 
   lambda-rie-test:
     uses: ./.github/workflows/_reusable_lambda_rie_test.yml
+
+  cdk-synth:
+    uses: ./.github/workflows/_reusable_cdk_synth.yml
