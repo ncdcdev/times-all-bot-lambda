@@ -90,9 +90,18 @@ export class TimesAllBotStack extends cdk.Stack {
 					},
 				},
 			),
-			managedPolicies: [
-				iam.ManagedPolicy.fromAwsManagedPolicyName('AdministratorAccess'),
-			],
+			inlinePolicies: {
+				CdkDeploy: new iam.PolicyDocument({
+					statements: [
+						new iam.PolicyStatement({
+							actions: ['sts:AssumeRole'],
+							resources: [
+								`arn:aws:iam::${this.account}:role/cdk-hnb659fds-*-${this.account}-${this.region}`,
+							],
+						}),
+					],
+				}),
+			},
 		});
 
 		new cdk.CfnOutput(this, 'DeployRoleArn', {
