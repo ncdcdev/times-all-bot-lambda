@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import * as cdk from 'aws-cdk-lib';
-import { TimesAllBotStack } from '../lib/times-all-bot-stack.js';
+import { TimesAllBotStack } from '../lib/times-all-bot-stack.ts';
 
 const app = new cdk.App();
 new TimesAllBotStack(app, 'TimesAllBotStack', {
