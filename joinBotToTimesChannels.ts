@@ -1,8 +1,6 @@
 import { WebClient } from '@slack/web-api';
-import dotenv from 'dotenv';
-dotenv.config();
 
-const token = process.env.SLACK_BOT_TOKEN; // .envからBotトークンを取得
+const token = process.env['SLACK_BOT_TOKEN']; // .envからBotトークンを取得
 const web = new WebClient(token);
 
 async function joinTimesChannels() {

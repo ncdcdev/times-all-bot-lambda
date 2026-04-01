@@ -1,18 +1,12 @@
 {
+	"extends": "@tsconfig/strictest/tsconfig.json",
 	"compilerOptions": {
-		"target": "ES2020",
-		"module": "commonjs",
-		"lib": ["ES2020"],
+		"target": "es2022",
+		"module": "node16",
+		"lib": ["ES2022"],
 		"declaration": true,
-		"strict": true,
-		"noImplicitAny": true,
-		"strictNullChecks": true,
-		"noImplicitThis": true,
-		"alwaysStrict": true,
 		"outDir": "cdk.out/ts",
-		"esModuleInterop": true,
-		"forceConsistentCasingInFileNames": true,
-		"skipLibCheck": true,
+		"types": ["node"],
 		"resolveJsonModule": true
 	},
 	"include": ["bin/**/*.ts", "lib/**/*.ts"]

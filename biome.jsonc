@@ -1,0 +1,17 @@
+{
+	"$schema": "https://biomejs.dev/schemas/2.4.9/schema.json",
+	"vcs": { "enabled": true, "clientKind": "git", "useIgnoreFile": true },
+	"formatter": { "enabled": true, "indentStyle": "tab" },
+	"assist": { "actions": { "source": { "organizeImports": "on" } } },
+	"linter": {
+		"enabled": true,
+		"rules": {
+			"complexity": {
+				// TSのnoPropertyAccessFromIndexSignatureと競合するため無効化
+				// biomeは型情報を持たずindex signatureを判定できない
+				"useLiteralKeys": "off"
+			}
+		}
+	},
+	"javascript": { "formatter": { "quoteStyle": "single" } }
+}

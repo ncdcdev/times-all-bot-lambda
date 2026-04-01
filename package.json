@@ -2,9 +2,9 @@
 	"name": "time-all-bot",
 	"version": "1.0.0",
 	"description": "repost times-* channel to \"time-all\"",
-	"main": "index.js",
+	"type": "module",
 	"scripts": {
-		"dev": "ts-node index.ts",
+		"dev": "node --env-file=.env index.ts",
 		"lint": "biome check --write .",
 		"format": "biome format .",
 		"check": "biome check .",
@@ -14,19 +14,15 @@
 	"author": "",
 	"license": "ISC",
 	"dependencies": {
-		"@slack/bolt": "^3.17.1",
-		"dotenv": "^16.4.4",
-		"ts-node": "^10.9.2"
+		"@slack/bolt": "^4.6.0"
 	},
 	"devDependencies": {
-		"@biomejs/biome": "1.9.0",
-		"@slack/web-api": "^7.0.2",
-		"@types/aws-lambda": "^8.10.134",
-		"@types/node": "^24.0.0",
-		"@typescript-eslint/eslint-plugin": "^7.0.1",
-		"@typescript-eslint/parser": "^7.0.1",
+		"@biomejs/biome": "2.4.9",
+		"@slack/web-api": "^7.15.0",
+		"@tsconfig/strictest": "^2.0.8",
+		"@types/aws-lambda": "^8.10.161",
+		"@types/node": "^25.5.0",
 		"esbuild": "^0.27.4",
-		"eslint": "^8.56.0",
-		"typescript": "^5.3.3"
+		"typescript": "^6.0.2"
 	}
 }
