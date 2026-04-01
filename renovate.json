@@ -1,9 +1,7 @@
 {
 	"$schema": "https://docs.renovatebot.com/renovate-schema.json",
 	"extends": ["config:best-practices", ":pinAllExceptPeerDependencies"],
-	"baseBranchPatterns": [
-		"main"
-	],
+	"baseBranchPatterns": ["main"],
 	"timezone": "Asia/Tokyo",
 	"schedule": ["before 9am on monday"],
 	"minimumReleaseAge": "3 days",
