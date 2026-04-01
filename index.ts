@@ -87,6 +87,7 @@ export const handler = async (
 ) => {
 	const boltHandler = await awsLambdaReceiver.start();
 	// boltHandlerは内部的にcallbackを使用しないが、型定義上3引数が必須
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	// biome-ignore lint/suspicious/noExplicitAny: AwsEventの型がexportされていないため
+	// biome-ignore lint/suspicious/noEmptyBlockStatements: callbackは使用されないためno-op
 	return boltHandler(event as any, context, () => {});
 };
