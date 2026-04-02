@@ -63,7 +63,11 @@ export function createMessageHandler(
 			return;
 		}
 
-		const channelName = await getChannelName(client, message.channel, channelNameCache);
+		const channelName = await getChannelName(
+			client,
+			message.channel,
+			channelNameCache,
+		);
 		if (!channelName) {
 			return;
 		}
