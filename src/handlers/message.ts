@@ -9,9 +9,6 @@ type SlackClient = (AllMiddlewareArgs &
 
 const channelNameCache = new Map<string, string>();
 
-const MAX_RETRIES = 2;
-const RETRY_DELAY_MS = 500;
-
 async function getChannelName(
 	client: SlackClient,
 	channelId: string,
@@ -20,34 +17,28 @@ async function getChannelName(
 	if (cached !== undefined) {
 		return cached;
 	}
-	for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
-		try {
-			const channelInfo = await client.conversations.info({
+	try {
+		const channelInfo = await client.conversations.info({
+			channel: channelId,
+		});
+		const channelName = channelInfo.channel?.name;
+		if (!channelName) {
+			console.error('channel name not found', {
 				channel: channelId,
+				ok: channelInfo.ok,
+				error: channelInfo.error,
 			});
-			const channelName = channelInfo.channel?.name;
-			if (!channelName) {
-				console.error('channel name not found', {
-					channel: channelId,
-					ok: channelInfo.ok,
-					error: channelInfo.error,
-				});
-				return undefined;
-			}
-			channelNameCache.set(channelId, channelName);
-			return channelName;
-		} catch (error) {
-			console.error('conversations.info failed', {
-				channel: channelId,
-				attempt: attempt + 1,
-				error: error instanceof Error ? error.message : error,
-			});
-			if (attempt < MAX_RETRIES) {
-				await new Promise((resolve) => setTimeout(resolve, RETRY_DELAY_MS));
-			}
+			return undefined;
 		}
+		channelNameCache.set(channelId, channelName);
+		return channelName;
+	} catch (error) {
+		console.error('conversations.info failed', {
+			channel: channelId,
+			error: error instanceof Error ? error.message : error,
+		});
+		return undefined;
 	}
-	return undefined;
 }
 
 export function createMessageHandler(
