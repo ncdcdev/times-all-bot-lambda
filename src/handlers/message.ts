@@ -7,13 +7,12 @@ import { isTimesChannel } from '../lib/timesChannel.ts';
 type SlackClient = (AllMiddlewareArgs &
 	SlackEventMiddlewareArgs<'message'>)['client'];
 
-const channelNameCache = new Map<string, string>();
-
 async function getChannelName(
 	client: SlackClient,
 	channelId: string,
+	cache: Map<string, string>,
 ): Promise<string | undefined> {
-	const cached = channelNameCache.get(channelId);
+	const cached = cache.get(channelId);
 	if (cached !== undefined) {
 		return cached;
 	}
@@ -30,7 +29,7 @@ async function getChannelName(
 			});
 			return undefined;
 		}
-		channelNameCache.set(channelId, channelName);
+		cache.set(channelId, channelName);
 		return channelName;
 	} catch (error) {
 		console.error('conversations.info failed', {
@@ -45,6 +44,8 @@ export function createMessageHandler(
 	timesAllChannelId: string,
 	workspaceUrl: string,
 ) {
+	const channelNameCache = new Map<string, string>();
+
 	return async ({
 		message,
 		client,
@@ -59,7 +60,7 @@ export function createMessageHandler(
 			return;
 		}
 
-		const channelName = await getChannelName(client, message.channel);
+		const channelName = await getChannelName(client, message.channel, channelNameCache);
 		if (!channelName) {
 			return;
 		}
