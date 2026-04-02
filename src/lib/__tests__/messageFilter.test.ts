@@ -30,7 +30,7 @@ describe('isForwardableMessage', () => {
 		assert.equal(isForwardableMessage(message, timesAllChannelId), false);
 	});
 
-	it('subtypeを持つメッセージはfalseを返す (channel_join)', () => {
+	it('転送対象外のsubtypeはfalseを返す (channel_join)', () => {
 		const message = {
 			type: 'message',
 			subtype: 'channel_join',
@@ -41,7 +41,7 @@ describe('isForwardableMessage', () => {
 		assert.equal(isForwardableMessage(message, timesAllChannelId), false);
 	});
 
-	it('subtypeを持つメッセージはfalseを返す (bot_message)', () => {
+	it('転送対象外のsubtypeはfalseを返す (bot_message)', () => {
 		const message = {
 			type: 'message',
 			subtype: 'bot_message',
@@ -52,7 +52,7 @@ describe('isForwardableMessage', () => {
 		assert.equal(isForwardableMessage(message, timesAllChannelId), false);
 	});
 
-	it('subtypeを持つメッセージはfalseを返す (message_changed)', () => {
+	it('転送対象外のsubtypeはfalseを返す (message_changed)', () => {
 		const message = {
 			type: 'message',
 			subtype: 'message_changed',
@@ -61,6 +61,50 @@ describe('isForwardableMessage', () => {
 			ts: '1234567890.123456',
 			hidden: true,
 		} as AllMessageEvents;
+		assert.equal(isForwardableMessage(message, timesAllChannelId), false);
+	});
+
+	it('file_shareは転送対象としてtrueを返す', () => {
+		const message = {
+			type: 'message',
+			subtype: 'file_share',
+			channel: 'C_OTHER',
+			channel_type: 'channel',
+			ts: '1234567890.123456',
+		} as AllMessageEvents;
+		assert.equal(isForwardableMessage(message, timesAllChannelId), true);
+	});
+
+	it('me_messageは転送対象としてtrueを返す', () => {
+		const message = {
+			type: 'message',
+			subtype: 'me_message',
+			channel: 'C_OTHER',
+			channel_type: 'channel',
+			ts: '1234567890.123456',
+		} as AllMessageEvents;
+		assert.equal(isForwardableMessage(message, timesAllChannelId), true);
+	});
+
+	it('thread_broadcastは転送対象としてtrueを返す', () => {
+		const message = {
+			type: 'message',
+			subtype: 'thread_broadcast',
+			channel: 'C_OTHER',
+			channel_type: 'channel',
+			ts: '1234567890.123456',
+		} as AllMessageEvents;
+		assert.equal(isForwardableMessage(message, timesAllChannelId), true);
+	});
+
+	it('未知のsubtypeは転送対象外としてfalseを返す', () => {
+		const message = {
+			type: 'message',
+			subtype: 'some_unknown_subtype',
+			channel: 'C_OTHER',
+			channel_type: 'channel',
+			ts: '1234567890.123456',
+		} as unknown as AllMessageEvents;
 		assert.equal(isForwardableMessage(message, timesAllChannelId), false);
 	});
 });
