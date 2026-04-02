@@ -34,7 +34,10 @@ async function getChannelName(
 	} catch (error) {
 		console.error('conversations.info failed', {
 			channel: channelId,
-			error: error instanceof Error ? error.message : error,
+			error:
+				error instanceof Error
+					? { name: error.name, message: error.message, stack: error.stack }
+					: error,
 		});
 		return undefined;
 	}
