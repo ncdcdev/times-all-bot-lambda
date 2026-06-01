@@ -12,12 +12,12 @@
 	"dependencies": {
 		"aws-cdk-lib": "2.257.0",
 		"constructs": "10.6.0",
-		"valibot": "1.4.0"
+		"valibot": "1.4.1"
 	},
 	"devDependencies": {
 		"@tsconfig/strictest": "2.0.8",
 		"@types/node": "25.9.1",
-		"aws-cdk": "2.1124.1",
+		"aws-cdk": "2.1125.0",
 		"esbuild": "0.28.0",
 		"typescript": "6.0.3"
 	}
