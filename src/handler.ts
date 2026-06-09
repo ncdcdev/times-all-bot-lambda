@@ -23,6 +23,5 @@ export const handler = async (
 	}
 
 	const boltHandler = await receiver.start();
-	// biome-ignore lint/suspicious/noExplicitAny: AwsEventの型がexportされていないため
-	return boltHandler(event as any, context, () => {});
+	return boltHandler(event, context, () => {});
 };
