@@ -1,5 +1,7 @@
 import { createSlackApp } from './app.ts';
 import { loadEnv } from './env.ts';
+import type { SlackHeaders } from './lib/slackRetry.ts';
+import { isSlackRetry } from './lib/slackRetry.ts';
 
 const env = loadEnv();
 const { receiver } = createSlackApp(env);
@@ -12,8 +14,17 @@ export const handler = async (
 	event: Record<string, unknown>,
 	context: unknown,
 ) => {
+	// biome-ignore lint/suspicious/noExplicitAny: AwsEventの型がexportされていないため
+	const headers = (event as any).headers as SlackHeaders;
+	if (isSlackRetry(headers)) {
+		console.log('skipped: slack retry', {
+			retryNum: headers?.['x-slack-retry-num'],
+			retryReason: headers?.['x-slack-retry-reason'] ?? 'unknown',
+		});
+		return { statusCode: 200, body: 'ok (retry skipped)' };
+	}
+
 	const boltHandler = await receiver.start();
-	// boltHandlerは内部的にcallbackを使用しないが、型定義上3引数が必須
 	// biome-ignore lint/suspicious/noExplicitAny: AwsEventの型がexportされていないため
 	return boltHandler(event as any, context, () => {});
 };
