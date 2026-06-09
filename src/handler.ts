@@ -1,6 +1,6 @@
+import type { APIGatewayProxyEventV2 } from 'aws-lambda';
 import { createSlackApp } from './app.ts';
 import { loadEnv } from './env.ts';
-import type { SlackHeaders } from './lib/slackRetry.ts';
 import { isSlackRetry } from './lib/slackRetry.ts';
 
 const env = loadEnv();
@@ -11,15 +11,13 @@ const { receiver } = createSlackApp(env);
 // AwsLambdaReceiverのハンドラーを2引数のasync関数でラップする
 // ref: https://github.com/slackapi/bolt-js/issues/2761
 export const handler = async (
-	event: Record<string, unknown>,
+	event: APIGatewayProxyEventV2,
 	context: unknown,
 ) => {
-	// biome-ignore lint/suspicious/noExplicitAny: AwsEventの型がexportされていないため
-	const headers = (event as any).headers as SlackHeaders;
-	if (isSlackRetry(headers)) {
+	if (isSlackRetry(event.headers)) {
 		console.log('skipped: slack retry', {
-			retryNum: headers?.['x-slack-retry-num'],
-			retryReason: headers?.['x-slack-retry-reason'] ?? 'unknown',
+			retryNum: event.headers['x-slack-retry-num'],
+			retryReason: event.headers['x-slack-retry-reason'] ?? 'unknown',
 		});
 		return { statusCode: 200, body: 'ok (retry skipped)' };
 	}

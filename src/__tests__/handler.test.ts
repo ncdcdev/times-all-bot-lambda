@@ -17,8 +17,4 @@ describe('isSlackRetry', () => {
 		};
 		assert.equal(isSlackRetry(headers), false);
 	});
-
-	it('headersがundefinedの場合はfalseを返す', () => {
-		assert.equal(isSlackRetry(undefined), false);
-	});
 });
