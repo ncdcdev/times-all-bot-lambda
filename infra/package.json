@@ -16,7 +16,7 @@
 	},
 	"devDependencies": {
 		"@tsconfig/strictest": "2.0.8",
-		"@types/node": "25.9.4",
+		"@types/node": "25.9.5",
 		"aws-cdk": "2.1129.0",
 		"esbuild": "0.28.1",
 		"typescript": "7.0.2"
