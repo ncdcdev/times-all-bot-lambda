@@ -22,5 +22,5 @@ export const handler = async (
 	}
 
 	const boltHandler = await receiver.start();
-	return boltHandler(event, context, () => {});
+	return boltHandler(event, context);
 };

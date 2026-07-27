@@ -15,7 +15,7 @@
 	"author": "",
 	"license": "ISC",
 	"dependencies": {
-		"@slack/bolt": "4.7.3",
+		"@slack/bolt": "5.0.0",
 		"valibot": "1.4.2"
 	},
 	"devDependencies": {
