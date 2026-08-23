@@ -19,7 +19,7 @@
 		"valibot": "1.4.2"
 	},
 	"devDependencies": {
-		"@biomejs/biome": "2.5.8",
+		"@biomejs/biome": "2.5.9",
 		"@slack/web-api": "8.0.0",
 		"@tsconfig/strictest": "2.0.8",
 		"@types/aws-lambda": "8.10.162",
