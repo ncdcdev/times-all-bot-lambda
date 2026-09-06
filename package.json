@@ -15,14 +15,14 @@
 	"author": "",
 	"license": "ISC",
 	"dependencies": {
-		"@slack/bolt": "5.0.0",
+		"@slack/bolt": "5.1.0",
 		"valibot": "1.4.2"
 	},
 	"devDependencies": {
-		"@biomejs/biome": "2.5.10",
+		"@biomejs/biome": "2.5.12",
 		"@slack/web-api": "8.1.1",
 		"@tsconfig/strictest": "2.0.8",
-		"@types/aws-lambda": "8.10.162",
+		"@types/aws-lambda": "8.10.163",
 		"@types/node": "25.9.5",
 		"esbuild": "0.28.2",
 		"typescript": "7.0.2"
