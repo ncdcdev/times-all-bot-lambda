@@ -11,28 +11,26 @@ jobs:
         with:
           persist-credentials: false
 
-      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+      - uses: pnpm/setup@fa36a5ef7dcdefc3a7cb25655c122e00cf6e636e # v3.1.2
         with:
-          node-version: "24.22.2"
-          cache: npm
+          cache: true
+          require-lockfile: true
           cache-dependency-path: |
-            package-lock.json
-            infra/package-lock.json
+            pnpm-lock.yaml
+            infra/pnpm-lock.yaml
 
-      - run: npm ci
-
-      - run: npm ci
+      - run: pnpm install --frozen-lockfile
         working-directory: infra
 
       - name: Biome Check
-        run: npm run check
+        run: pnpm run check
 
       - name: Test
-        run: npm test
+        run: pnpm test
 
       - name: TypeCheck
-        run: npm run typecheck
+        run: pnpm run typecheck
 
       - name: TypeCheck (infra)
-        run: npx tsc --noEmit
+        run: pnpm run typecheck
         working-directory: infra
