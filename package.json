@@ -9,7 +9,9 @@
 		"format": "biome format .",
 		"check": "biome check .",
 		"typecheck": "tsc",
-		"test": "node --test 'src/**/*.test.ts'"
+		"test": "node --test 'src/**/*.test.ts'",
+		"build:lambda": "node scripts/build-lambda.ts",
+		"node:major": "node scripts/node-version.ts"
 	},
 	"keywords": [],
 	"author": "",
@@ -20,11 +22,24 @@
 	},
 	"devDependencies": {
 		"@biomejs/biome": "2.5.13",
+		"@slack/types": "3.2.0",
 		"@slack/web-api": "8.1.1",
 		"@tsconfig/strictest": "2.0.8",
 		"@types/aws-lambda": "8.10.163",
 		"@types/node": "25.9.6",
 		"esbuild": "0.28.2",
 		"typescript": "7.0.2"
+	},
+	"devEngines": {
+		"runtime": {
+			"name": "node",
+			"version": "24.x",
+			"onFail": "download"
+		},
+		"packageManager": {
+			"name": "pnpm",
+			"version": "12.18.0",
+			"onFail": "download"
+		}
 	}
 }

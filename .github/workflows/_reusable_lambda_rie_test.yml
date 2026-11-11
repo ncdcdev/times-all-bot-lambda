@@ -11,22 +11,21 @@ jobs:
         with:
           persist-credentials: false
 
-      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+      - uses: pnpm/setup@fa36a5ef7dcdefc3a7cb25655c122e00cf6e636e # v3.1.2
         with:
-          node-version: "24.22.2"
-          cache: npm
-          cache-dependency-path: package-lock.json
-
-      - run: npm ci
+          cache: true
+          require-lockfile: true
+          cache-dependency-path: pnpm-lock.yaml
 
       - name: Bundle handler
-        run: npx esbuild src/handler.ts --bundle --platform=node --target=node24 --external:@slack/bolt --outfile=dist/index.js
+        run: pnpm run build:lambda
 
       - name: Prepare Lambda artifact
         run: cp -R node_modules dist/
 
       - name: Start Lambda RIE container
         run: |
+          NODE_MAJOR=$(pnpm --silent run node:major)
           docker run -d --name lambda-rie \
             -p 9000:8080 \
             -v ${{ github.workspace }}/dist:/var/task:ro \
@@ -34,7 +33,7 @@ jobs:
             -e SLACK_BOT_TOKEN=xoxb-test-token \
             -e TIMES_ALL_CHANNEL_ID=C0000000000 \
             -e WORKSPACE_URL=https://test.slack.com \
-            public.ecr.aws/lambda/nodejs:24 \
+            "public.ecr.aws/lambda/nodejs:${NODE_MAJOR}" \
             index.handler
 
       - name: Test handler invocation

@@ -6,6 +6,7 @@ import * as iam from 'aws-cdk-lib/aws-iam';
 import * as runtime from 'aws-cdk-lib/aws-lambda';
 import * as lambda from 'aws-cdk-lib/aws-lambda-nodejs';
 import type { Construct } from 'constructs';
+import { nodeMajor } from '../../scripts/node-version.ts';
 import { loadEnv } from '../../src/env.ts';
 
 export class TimesAllBotStack extends cdk.Stack {
@@ -13,13 +14,19 @@ export class TimesAllBotStack extends cdk.Stack {
 		super(scope, id, props);
 
 		const env = loadEnv();
+		const nodeRuntime = runtime.Runtime.ALL.find(
+			(candidate) => candidate.name === `nodejs${nodeMajor}.x`,
+		);
+		if (!nodeRuntime) {
+			throw new Error(`AWS CDK does not support Node.js ${nodeMajor}`);
+		}
 
 		const projectRoot = path.join(import.meta.dirname, '../..');
 
 		const fn = new lambda.NodejsFunction(this, 'SlackHandler', {
 			entry: path.join(projectRoot, 'src/handler.ts'),
 			handler: 'handler',
-			runtime: runtime.Runtime.NODEJS_24_X,
+			runtime: nodeRuntime,
 			timeout: cdk.Duration.seconds(30),
 			environment: {
 				SLACK_BOT_TOKEN: env.slackBotToken,
@@ -41,7 +48,7 @@ export class TimesAllBotStack extends cdk.Stack {
 					},
 				},
 			},
-			depsLockFilePath: path.join(projectRoot, 'package-lock.json'),
+			depsLockFilePath: path.join(projectRoot, 'pnpm-lock.yaml'),
 		});
 
 		const httpApi = new apigatewayv2.HttpApi(this, 'HttpApi', {
